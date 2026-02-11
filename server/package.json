@@ -1,0 +1,36 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/index-sqlite.ts",
+    "dev:postgres": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@fastify/cors": "^8.4.0",
+    "better-sqlite3": "^9.2.0",
+    "dotenv": "^16.3.0",
+    "drizzle-orm": "^0.29.0",
+    "fastify": "^4.24.0",
+    "pg": "^8.11.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^18.19.0",
+    "@types/pg": "^8.10.0",
+    "drizzle-kit": "^0.20.0",
+    "tsx": "^3.14.0",
+    "typescript": "^5.3.0"
+  }
+}
