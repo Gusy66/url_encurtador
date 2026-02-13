@@ -1,4 +1,4 @@
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { Link as LinkIcon, Copy, Trash2, Download } from "lucide-react";
 import { Card, CardContent, CardHeader } from "./components/ui/Card";
 import { Input } from "./components/ui/Input";
@@ -17,6 +17,21 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<UrlItem[]>([]);
 
+  useEffect(() => {
+    // Carrega a listagem inicial do backend (persistência após refresh)
+    (async () => {
+      try {
+        const res = await fetch("/api/urls");
+        if (!res.ok) return;
+        const payload = await res.json(); // { success: true, data: UrlItem[] }
+        const list = Array.isArray(payload?.data) ? payload.data : [];
+        setItems(list);
+      } catch {
+        // silencioso: UI continua utilizável mesmo sem lista inicial
+      }
+    })();
+  }, []);
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (!url) return;
@@ -31,7 +46,8 @@ export default function App() {
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error("Falha ao encurtar a URL");
-      const data = await res.json(); // { shortUrl, originalUrl, shortCode }
+      const payload = await res.json(); // { success: true, data: { shortUrl, originalUrl, shortCode } }
+      const data = payload?.data ?? payload;
 
       setItems((prev) => [{ ...data, clicks: 0 }, ...prev]);
       setUrl("");
@@ -203,9 +219,10 @@ export default function App() {
 function toDisplayShort(shortUrl: string) {
   try {
     const u = new URL(shortUrl);
-    // mostra “brev.ly/Algo” ou “localhost:3333/r/Algo” de forma bonita
+    // UX: exibe como "brev.ly/<codigo>" (marca), independente do host real
     if (u.pathname.startsWith("/r/")) {
-      return `${u.host}/${u.pathname.replace(/^\/r\//, "")}`;
+      const code = u.pathname.replace(/^\/r\//, "");
+      return `brev.ly/${code}`;
     }
     return `${u.host}${u.pathname}`;
   } catch {

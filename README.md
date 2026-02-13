@@ -75,6 +75,43 @@ npm run dev
 - **Banco**: o backend usa **SQLite** por padrão (sem configuração).
 - **Acesso**: frontend em `http://localhost:5173` e backend em `http://localhost:3333`.
 
+## 🌍 Link curto “bonito” (sem `:3333`) — Opção 3
+
+Para o link encurtado sair com **um domínio e sem porta** (ex.: `https://meu-dominio/r/abc123`), você precisa colocar um **túnel/reverse proxy** na frente do backend.
+
+### Opção 3A — ngrok (mais simples)
+
+1) Suba o backend normalmente:
+
+```bash
+cd server
+npm run dev
+```
+
+2) Em outro terminal, crie um túnel para a porta 3333:
+
+```bash
+ngrok http 3333
+```
+
+3) Copie o domínio gerado (ex.: `https://xxxx.ngrok-free.app`) e rode o backend com:
+
+```bash
+# PowerShell (na pasta server)
+$env:SHORT_BASE_URL="https://xxxx.ngrok-free.app"
+npm run dev
+```
+
+Agora o backend vai responder `shortUrl` como `https://xxxx.ngrok-free.app/r/<codigo>` (sem `:3333`).
+
+### Opção 3B — Cloudflare Tunnel
+
+1) Suba o backend normalmente (porta 3333).
+
+2) Crie o túnel apontando para `http://localhost:3333` (o comando exato depende do seu setup do `cloudflared`).
+
+3) Defina `SHORT_BASE_URL` com o domínio do túnel e reinicie o backend.
+
 ## 🚀 Executando o Projeto
 
 ### Desenvolvimento
